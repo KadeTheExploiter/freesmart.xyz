@@ -76,7 +76,7 @@ local ExecutionCentre = Instance.new("ScreenGui"); do
 			Title.Name = "Title"
 			Title.Position = UDim2.new(0.037,0,0.05,0)
 			Title.Size = UDim2.new(0,200,0,26)
-			Title.Text = "freesmart.wtf, v1.1.0"
+			Title.Text = "freesmart.xyz, v1.1.0"
 			Title.TextColor3 = Color3.fromRGB(231,231,231)
 			Title.TextSize = 16
 			Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -844,7 +844,7 @@ local function Reanimate()
 	local Workspace = game:GetService("Workspace")
 
 	if FindFirstChild(Workspace,  "!!!!KadeRig") then
-		warn(`[freesmart.wtf] Reanimation already running!`)
+		warn(`[freesmart.xyz] Reanimation already running!`)
 		return
 	end
 	
@@ -1026,13 +1026,13 @@ local function Reanimate()
 	FakeRig:PivotTo(RootPart.CFrame * CFrame.new(0, 2, 0))
 	StarterGui:SetCore("ResetButtonCallback", Respawn)
 
-	warn(`[freesmart.wtf] Reanimation Loaded (made by gelatek, creds to kayia for method)`)
+	warn(`[freesmart.xyz] Reanimation Loaded (made by gelatek, creds to kayia for method)`)
 
 	-- Animator
 	AnimationPlayer = {
 		Start = function(AnimationID: number)
 			if not FakeRig and not FakeRoot then 
-				warn('[freesmart.wtf] Animation Failed to load (no active reanimate)')
+				warn('[freesmart.xyz] Animation Failed to load (no active reanimate)')
 				return
 			end
 			local Lerp = FakeRoot.CFrame.Lerp
@@ -1096,7 +1096,7 @@ local function Reanimate()
 		Stop = StopAnimationThread
 	}
 
-	warn(`[freesmart.wtf] Animation Handler Embedded.`)
+	warn(`[freesmart.xyz] Animation Handler Embedded.`)
 end
 
 Commands[{"dex", "explorer"}] = {
@@ -1257,7 +1257,7 @@ Commands[{"getplayerdata","gpd"}] = {
 				end
 
 				local InfoDump = table.concat({
-					`[freesmart.wtf]: Dump for {Player.Name}`,
+					`[freesmart.xyz]: Dump for {Player.Name}`,
 					`- UserId: {Player.UserId}`,
 					`- DisplayName: {Player.DisplayName}`,
 					`- AccountAge: {Player.AccountAge} days`,
@@ -1384,7 +1384,7 @@ Commands[{"playanim"}] = {
         if PlayID and AnimationPlayer then
             AnimationPlayer.Start(PlayID)
         else
-            print("['freesmart.wtf'] Animation not found: " .. Input)
+            print("['freesmart.xyz'] Animation not found: " .. Input)
         end
 	end
 }
