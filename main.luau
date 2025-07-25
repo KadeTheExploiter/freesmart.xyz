@@ -45,8 +45,12 @@ local Commands; Commands = {
 	},
 }
 
-local GuiParent = gethui and gethui() or pcall(game, "GetService", game, "CoreGui") and game.CoreGui or LocalPlayer:WaitForChild("PlayerGui")
-
+local GuiParent = gethui and gethui() or pcall(game.GetService, game, "CoreGui") and game.CoreGui or LocalPlayer:WaitForChild("PlayerGui")
+local Music = GuiParent:FindFirstChild("freesmart.xyz_songs") or Instance.new("Sound", GuiParent)
+Music.Looped = true
+Music:Stop()
+Music.SoundId = ""
+Music.Name = "freesmart.xyz_songs"
 local ExecutionCentre = Instance.new("ScreenGui"); do
 	ExecutionCentre.Name = "ExecutionCentre"
 	ExecutionCentre.ResetOnSpawn = false
@@ -76,7 +80,7 @@ local ExecutionCentre = Instance.new("ScreenGui"); do
 			Title.Name = "Title"
 			Title.Position = UDim2.new(0.037,0,0.05,0)
 			Title.Size = UDim2.new(0,200,0,26)
-			Title.Text = "freesmart.xyz, v1.1.0"
+			Title.Text = "freesmart.xyz, v1.2.0"
 			Title.TextColor3 = Color3.fromRGB(231,231,231)
 			Title.TextSize = 16
 			Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -985,6 +989,8 @@ local function Reanimate()
 			Joint.Transform = JointsOffsets[Name]
 		end
 
+		Music:Stop()
+
 		table.clear(FrameTimes)
 		table.clear(FrameData)
 
@@ -1186,9 +1192,9 @@ Commands[{"flingclick","fc"}] = {
 				local Character = LocalPlayer.Character
 
 				local ___ =  Mouse.Target
-				local _1 = ___.Parent
+				local _1 = ___ and ___.Parent
 
-				local Target = ___ and (_1:IsA("Model") and _1 or _1.Parent:IsA("Model") and _1.Parent)
+				local Target = ___ and (_1 and _1:IsA("Model") and _1 or _1.Parent:IsA("Model") and _1.Parent)
 				
 				if not Target then
 					return
@@ -1242,10 +1248,9 @@ Commands[{"getplayerdata","gpd"}] = {
 			if HoldingAlt and Input.UserInputType == Enum.UserInputType.MouseButton1 then
 
 				local ___ =  Mouse.Target
-				local _1 = ___.Parent
+				local _1 = ___ and ___.Parent
 
-				local Target = ___ and (_1:IsA("Model") and _1 or _1.Parent:IsA("Model") and _1.Parent)
-				
+				local Target = ___ and (_1 and _1:IsA("Model") and _1 or _1.Parent:IsA("Model") and _1.Parent)
 				if not Target then
 					return
 				end
@@ -1359,34 +1364,55 @@ Commands[{"unr6", "dereanim"}] = {
 	end
 }
 
+local AnimationKeys = {}
+for key in Animations do
+	table.insert(AnimationKeys, key)
+end
+
 Commands[{"playanim"}] = {
-	Arguments = {"animation_id_or_name"},
-	Description = "(!!! reanim first) loads r6 animation",
-	Function = function(Args)
-		local Input = Args[1]
+    Arguments = {"animation_id_or_name"},
+    Description = "Loads an R6 animation by ID or name. (!!! reanimate first)",
+    Function = function(Args)
+        local Input = Args[1]
 
-		if not Input then return end 
-        local PlayID = nil
-
-		Input = string.lower(Input)
-
-		if not PlayID then
-            PlayID = tonumber(Input)
+        if not Input then 
+            Input = Animations[AnimationKeys[math.random(1, #AnimationKeys)]]
         end
 
+        local PlayID
+        local SongName
+
         for Name, AnimationID in Animations do
-            if string.match(Name:lower(), Input) then
+            if AnimationID == tonumber(Input) then
+                SongName = Name
                 PlayID = AnimationID
                 break
             end
         end
 
+        if not PlayID then
+            for Name, AnimationID in Animations do
+                if string.match(Name:lower(), Input:lower()) then
+                    PlayID = AnimationID
+                    SongName = Name
+                    break
+                end
+            end
+        end
+
         if PlayID and AnimationPlayer then
             AnimationPlayer.Start(PlayID)
+            if getcustomasset then
+				local Suc, _ = pcall(getcustomasset, "freesmart.xyz/Animations/" .. SongName .. ".mp3")
+				if Suc then
+					Music.SoundId = _
+				end
+                Music:Play()
+            end
         else
             print("['freesmart.xyz'] Animation not found: " .. Input)
         end
-	end
+    end
 }
 
 Commands[{"stopanim"}] = {
@@ -1407,6 +1433,60 @@ Commands[{"printanims"}] = {
 	end
 }
 
+Commands[{"mute", "muteanimsongs"}] = {
+	Arguments = {},
+	Description = "mutes animation songs",
+	Function = function()
+		Music.Volume = Music.Volume == 0 and 0.5 or 0
+	end
+}
+Commands[{"unmute", "muteanimsongs"}] = {
+	Arguments = {},
+	Description = "unmutes animation songs",
+	Function = function()
+		Music.Volume = .5
+	end
+}
+
+Commands[{"downloadmusic", 'getsongs', 'downloadsongs'}] = {
+	Arguments = {},
+	Description = "download anim songs from gelatekhub repo, needs getcustomasset+filesys",
+	Function = function()
+		if not isfolder("freesmart.xyz") then
+			makefolder("freesmart.xyz")
+		end
+		
+		if not isfolder("freesmart.xyz/Animations") then
+			makefolder("freesmart.xyz/Animations")
+		end
+		
+		local SongsURL = "https://raw.githubusercontent.com/Gelatekussy/GelatekHubSongs/refs/heads/main/"
+		local Animations = {"CaramellDansen", "Freestylin", "Floss", "Parrot", "Smooth%20Moves", "Electro%20Swing", "Smug", "Aerostepping", "Orange%20Justice", "Breakdown", "Crabby", "Drip", "Laughing", "Take%20The%20L"}
+		
+		local DownloadModule = function(DirName, Song)
+			local SpacelessName = string.gsub(Song, "%%20", "")
+			local SongPath = "freesmart.xyz/" ..DirName.. "/".. SpacelessName.. ".mp3"
+
+			if not isfile(SongPath) then
+				local Success, Data = pcall(game.HttpGet, game, SongsURL .. Song .. ".mp3?raw=true")
+				if not Success then
+					return warn(SongPath, "Failed To Download...")
+				end
+				writefile(SongPath, Data)
+				warn(SongPath, "Downloaded!")
+			end
+		end
+
+		for _, Name in Animations do
+			DownloadModule("Animations", Name)
+
+			task.wait(1)
+		end
+		
+		warn("[freesmart.xyz], Downloaded all songs.")
+	end
+}
+
 Commands[{"prefix", "pr"}] = {
 	Arguments = {"newPrefix"},
 	Description = "changes prefix (default is ;)",
@@ -1420,6 +1500,286 @@ Commands[{"prefix", "pr"}] = {
 		end
 	end
 }
+
+local ClaimPart = nil
+local ClaimPartInUse = nil
+local ClaimPartSelection = nil
+
+Commands[{"claimpart", "findpart", "scanpart", "sp"}] = {
+	Arguments = {"isBruteforced"},
+	Description = "looks for unclaimed part, bruteforce makes it claim a part manually (might be dtc).",
+	Function = function(Args)
+		local BruteForce = Args[1] or ""
+		BruteForce = string.lower(BruteForce) 
+		BruteForce = BruteForce == "true" or BruteForce == "yes" or BruteForce == "y" and true or false
+		
+		if BruteForce then
+			print(`[freesmart.xyz] bruteforce scan for a part started, might take a bit`)
+		end
+
+		if ClaimPart then
+			ClaimPart = nil;
+
+			if ClaimPartSelection and ClaimPartSelection.Parent then
+				ClaimPartSelection:Destroy()
+			end
+		end
+
+		local PartsToBruteForce = {}
+		local FoundParts = {}
+
+		for _, Part in workspace:GetDescendants() do
+			local function ScanForJoints(Model)
+				local Flagged;
+
+				for _, Joint in Model:GetDescendants() do
+					if Joint:IsA("JointInstance") or Joint:IsA("WeldConstraint") or Joint:IsA("Weld") or Joint:IsA("ManualWeld") then
+						if Joint.Part0 == Part or Joint.Part1 == Part then
+							Flagged = true
+							break
+						end
+					elseif Joint:IsA("BallSocketConstraint") then
+						Flagged = true
+						break
+					end
+				end
+
+				return Flagged
+			end
+
+			local function ScanForFundamentals(Parent)
+				if not Parent or Parent == workspace then
+					return false
+				end
+
+				if Parent and Players:FindFirstChild(Parent.Name) then
+					return true
+				end
+	
+				if Parent and Parent:FindFirstChild("HumanoidRootPart") then
+					return true
+				end
+	
+				if Parent and Parent:IsA("Model") then
+					if Parent.PrimaryPart then
+						return true
+					end
+	
+					if ScanForJoints(Parent) then
+						return true
+					end
+				end
+			end
+
+			if not Part:IsA("Part") then
+				continue
+			end
+
+			if Part.Anchored or not Part.CanCollide or ScanForJoints(Part) then
+				continue
+			end
+
+			local Parent = Part.Parent
+
+			if ScanForFundamentals(Parent) then
+				continue
+			end
+
+			local Descendant = Parent.Parent and Parent.Parent -- luau
+
+			if ScanForFundamentals(Descendant) then
+				continue
+			end
+
+			if Part.ReceiveAge == 0 then
+				ClaimPart = Part
+				FoundParts[#FoundParts+1] = Part
+			else
+				if BruteForce then
+					PartsToBruteForce[#PartsToBruteForce+1] = Part
+				end
+			end
+		end
+
+		if BruteForce then
+			local Root = LocalPlayer.Character.PrimaryPart
+			local PrimaryPos = Root.CFrame
+
+			for _, Part in PartsToBruteForce do
+				Root.CFrame = Part.CFrame * CFrame.new(10, 10, math.random(-10, 10))
+				task.wait()
+				Root.Anchored = true
+				task.wait(0.08)
+				Root.Anchored = false
+				Root.CFrame = PrimaryPos
+				Root.Anchored = true
+				Root.Anchored = false
+				if Part.ReceiveAge == 0 then
+					FoundParts[#FoundParts+1] = Part
+
+					if #FoundParts == 10 then
+						break
+					end
+					
+					continue
+				end
+			end
+
+			table.clear(PartsToBruteForce)
+		end
+
+		local LastMagnitude = 0
+		local CurrentPart;
+
+		for _, v in FoundParts do
+			local CurrentMagnitude = v.Size.Magnitude
+
+			if CurrentMagnitude > LastMagnitude then
+				LastMagnitude = CurrentMagnitude
+				CurrentPart = v
+			end
+		end
+
+		if BruteForce then
+			local Root = LocalPlayer.Character.PrimaryPart
+			local PrimaryPos = Root.CFrame
+			Root.CFrame = CurrentPart.CFrame * CFrame.new(10, 10, math.random(-10, 10))
+			task.wait()
+			Root.Anchored = true
+
+			task.wait(0.16)
+			Root.Anchored = false
+			CurrentPart.AssemblyLinearVelocity = Vector3.zero
+			CurrentPart.AssemblyAngularVelocity = Vector3.zero
+			CurrentPart.CFrame = PrimaryPos * CFrame.new(0, 0, 10)
+			Root.CFrame = PrimaryPos
+			Root.Anchored = true
+			Root.Anchored = false
+		end
+
+		if not CurrentPart then
+			warn(`[freesmart.xyz] failed to locate an unanchored part with collisions, sorry :-(`)
+			return
+		end
+
+		ClaimPart = CurrentPart
+		ClaimPartSelection = Instance.new("SelectionBox", ClaimPart)
+		ClaimPartSelection.Adornee = ClaimPart
+
+		warn(`[freesmart.xyz] located largest part: {CurrentPart:GetFullName()}`)
+	end
+}
+
+Commands[{"isclaimed", "ispartclaimed"}] = {
+	Arguments = {},
+	Description = "prints true/false if claimpart exists and is claimed",
+	Function = function()
+		local Check = ClaimPart and ClaimPart.ReceiveAge == 0
+		print(Check)
+	end
+}
+
+Commands[{"stopclaim", "declaim", "unclaim", "delclaim"}] = {
+	Arguments = {},
+	Description = "Removes the Claim from the ClaimPart ",
+	Function = function()
+		ClaimPart = nil;
+		if ClaimPartSelection and ClaimPartSelection.Parent then
+			ClaimPartSelection:Destroy()
+		end
+	end
+}
+
+Commands[{"claimfling", "cpfling"}] = {
+	Arguments = {},
+	Description = "(Requires ClaimPart) CTRL + ScrollClick to fling someoneone",
+	Function = function()
+		if Signals['ClaimFlingLoop'] then
+			Signals['ClaimFlingLoop']:Disconnect()
+			Signals['ClaimFlingLoop'] = nil
+
+			return
+		end
+
+		if not ClaimPart or ClaimPart and not ClaimPart.ReceiveAge == 0 then
+			warn(`[freesmart.xyz] ClaimPart is not existant.`)
+		end
+
+		Signals['ClaimFlingLoop'] = UserInputService.InputBegan:Connect(function(Input)
+			if HoldingControl and Input.UserInputType == Enum.UserInputType.MouseButton3 then
+				if not ClaimPart or ClaimPart and not ClaimPart.ReceiveAge == 0 then
+					warn(`[freesmart.xyz] ClaimPart is not existant.`)
+
+					return
+				end
+
+				local ___ =  Mouse.Target
+				local _1 = ___ and ___.Parent
+
+				local Target = ___ and (_1 and _1:IsA("Model") and _1 or _1.Parent:IsA("Model") and _1.Parent)
+				
+				if not Target then
+					return
+				end
+
+				local _RootPart = Target.PrimaryPart
+				if not _RootPart then
+					return
+				end
+
+				ClaimPartInUse = true
+
+				for _ = 0, 32 do
+					ClaimPart.AssemblyLinearVelocity = Vector3.new(1,1,1) * 1200
+					ClaimPart.CFrame = _RootPart.CFrame + Vector3.new(0, math.random(-2, 2), 0) + _RootPart.AssemblyLinearVelocity / 2
+
+					task.wait()
+				end
+				
+				ClaimPartInUse = false
+			end
+		end)
+	end
+}
+
+-- Heartbeat loop for claimpart
+
+local _Signal; _Signal = RunService.PostSimulation:Connect(function()
+	if not ExecutionCentre or ExecutionCentre.Parent == nil then
+		_Signal:Disconnect()
+
+		for Index, Signal in Signals do
+			Signal:Disconnect()
+			Signals[Index] = nil
+		end
+
+		return
+	end
+
+	if ClaimPartInUse then
+		return
+	end
+
+	if not ClaimPart then
+		return
+	end
+
+	local Character = LocalPlayer.Character
+
+	if not Character and Character.PrimaryPart then
+		return
+	end
+
+	pcall(sethiddenproperty, LocalPlayer, "SimulationRadius", 1000)
+	
+	if ClaimPart.ReceiveAge == 0 then
+		ClaimPart.AssemblyLinearVelocity = Vector3.new(30, 30, 30)
+		ClaimPart.CFrame = Character.PrimaryPart.CFrame * CFrame.new(0, 20, 0)
+	else
+		ClaimPart = nil
+		warn(`[freesmart.xyz] lost ownership for ClaimPart.`)
+	end
+end)
 
 for i,v in pairs(Commands) do
 	AddCommand(i[1],v.Arguments,v.Description,nil,false)
