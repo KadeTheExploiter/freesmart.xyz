@@ -1601,10 +1601,10 @@ Commands[{"claimpart", "findpart", "scanpart", "sp"}] = {
 			end
 		end
 
-		if BruteForce then
-			local Root = LocalPlayer.Character.PrimaryPart
-			local PrimaryPos = Root.CFrame
+		local Root = LocalPlayer.Character.PrimaryPart
+		local PrimaryPos = Root.CFrame * CFrame.new(0, 2, 0)
 
+		if BruteForce then
 			for _, Part in PartsToBruteForce do
 				Root.CFrame = Part.CFrame * CFrame.new(10, 10, math.random(-10, 10))
 				task.wait()
@@ -1640,8 +1640,7 @@ Commands[{"claimpart", "findpart", "scanpart", "sp"}] = {
 			end
 		end
 
-		if BruteForce then
-			local Root = LocalPlayer.Character.PrimaryPart
+		if BruteForce and Root and CurrentPart then
 			local PrimaryPos = Root.CFrame
 			Root.CFrame = CurrentPart.CFrame * CFrame.new(10, 10, math.random(-10, 10))
 			task.wait()
