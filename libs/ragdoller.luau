@@ -96,6 +96,10 @@ local function TriggerRagdoll(State: string | boolean)
 			local ListOfArguments = Argument[3]
 			for _, VArgument in ListOfArguments do
 				local Success, _ = Method and pcall(Index[Method], Index, VArgument) or pcall(Index, VArgument)
+				
+				if Success then
+					break
+				end
 			end
 		end
 	end
