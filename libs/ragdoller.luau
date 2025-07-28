@@ -1,10 +1,10 @@
 -- Ragdoll Bruteforce, credit Gelatek when used
 
 local Player = game:GetService("Players").LocalPlayer
-local Instances = (getinstances and getinstances() or game:GetDescendants())
+local Instances =  game:GetDescendants()
 
 local IndexNames = {"ragdoll", "falling"}
-local ModuleFunctions = {"OnRagdoll", "Ragdoll", "ServerRagdoll", "StartRagdoll", "EndRagdoll", "StartRagdolling"}
+local ModuleFunctions = {"Ragdoll", "ServerRagdoll", "StartRagdolling"}
 local RagdollHandlers = {
 	['RemoteFunction'] = {['Start'] ={}, ['End']={}},
 	['RemoteEvent'] = {['Start'] ={}, ['End']={}},
@@ -43,7 +43,7 @@ for _, Index in Instances do
 
 			if IsModule then
 				local Success, Module = pcall(require, Index)
-				if not Success then
+                if not Success then
 					continue
 				end
 
@@ -74,8 +74,9 @@ for _, Index in Instances do
 			end
 
 			table.insert(RagdollHandlers[Category][SubCategory], {Index, Method, {nil, Player, Player.Character}})
-			break
 		end
+
+		break
 	end
 end
  
@@ -96,6 +97,8 @@ local function TriggerRagdoll(State: string | boolean)
 				local Success, _ = Method and pcall(Index[Method], Index, VArgument) or pcall(Index, VArgument)
 
 				if Success then
+					warn(`success {VArgument} `)
+
 					break
 				end
 			end
@@ -103,4 +106,4 @@ local function TriggerRagdoll(State: string | boolean)
 	end
 end
 
-return TriggerRagdoll
+TriggerRagdoll(true)
