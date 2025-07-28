@@ -84,7 +84,7 @@ for _, Index in Instances do
 end
 
 
-local function TriggerRagdoll(State: string | boolean)
+local function TriggerRagdoll(State: string | boolean, BreakOnEnd: boolean?)
 	if type(State) == "boolean" then
 		State = State and "Start" or "End"
 	end
@@ -97,7 +97,7 @@ local function TriggerRagdoll(State: string | boolean)
 			for _, VArgument in ListOfArguments do
 				local Success, _ = Method and pcall(Index[Method], Index, VArgument) or pcall(Index, VArgument)
 				
-				if Success then
+				if BreakOnEnd and Success then
 					break
 				end
 			end
