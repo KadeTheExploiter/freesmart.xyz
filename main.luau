@@ -20,9 +20,13 @@ local function ChangeProgress(Size, Text)
 	task.wait(1)
 end
 
-ChangeProgress(0.25, "Loading Ragdoller, can take 20s.")
-RagdollHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/libs/ragdoller.luau"))()
-ChangeProgress(0.75, "Loading Main UI")
-Loader = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/libs/init.luau"))()
+ChangeProgress(0.25, "Loading Main UI")
+	Loader = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/main.luau"))()
+if not RagdollHandler then
+	ChangeProgress(0.75, "Loading RagdollHandler (was nil)")	
+	RagdollHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/libs/ragdoller.luau"))()
+end
+
+
 ChangeProgress(1, "Loaded!")
 ScreenGui:Destroy()
