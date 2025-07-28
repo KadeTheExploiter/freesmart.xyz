@@ -1,5 +1,4 @@
 -- Ragdoll Bruteforce, credit Gelatek when used
-
 local _stringlower = string.lower
 local _stringmatch = string.match
 
@@ -7,7 +6,6 @@ local Player = game:GetService("Players").LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Instances = ReplicatedStorage:GetDescendants()
 
-local IndexNames = {"ragdoll", "falling"}
 local ModuleFunctions = {"Ragdoll", "ServerRagdoll", "StartRagdolling"}
 local RagdollHandlers = {
 	['RemoteFunction'] = {['Start'] ={}, ['End']={}},
@@ -17,11 +15,15 @@ local RagdollHandlers = {
 
 local RequiredModules = {}
 for _, Index in Instances do
+	if RequiredModules[Index] then
+		return
+	end
+
 	local ClassName = Index.ClassName
 
 	local IsModuleScript = ClassName == "ModuleScript"
 	local IsRemoteFunction = ClassName == "RemoteFunction"
-	local IsRemoteEvent = ClassName == "ModuleScript"
+	local IsRemoteEvent = ClassName == "RemoteEvent"
 
 	if not (IsModuleScript or IsRemoteEvent or IsRemoteFunction) then
 		continue
@@ -35,50 +37,50 @@ for _, Index in Instances do
 	end
 
 	local LowercaseName = _stringlower(Index.Name)
-	for _, StartName in IndexNames do
-		if _stringmatch(LowercaseName, StartName) then
-			local Method = IsRemoteFunction and "InvokeServer" or IsRemoteEvent and "FireServer"
-		
-			local IsDeragdolling = _stringmatch(LowercaseName, "un")
-			local SubCategory = IsDeragdolling and "End" or "Start"
+	print(LowercaseName)
+	if _stringmatch(LowercaseName, "ragdoll") or _stringmatch(LowercaseName, "falling") then
+		local IsDeragdolling = _stringmatch(LowercaseName, "un")
+		local SubCategory = IsDeragdolling and "End" or "Start"
+		print('sir are you stupid')
 
-			if IsModuleScript then
-				local Success, Module = pcall(require, Index)
-                if not Success then
-					continue
-				end
 
-				local IsAFunction = typeof(Module) == "function"
-				local IsNotATable = typeof(Module) ~= "table"
-					
-				if IsAFunction then
-					table.insert(RagdollHandlers[ClassName][SubCategory], {Index, nil, {9e9, nil, Player, Player.Character}})
+		if IsModuleScript then
+			local Success, Module = pcall(require, Index)
+			if not Success then
+				continue
+			end
 
-					continue
-				end
-
-				if IsNotATable then
-					return
-				end
-
-				RequiredModules[RequiredModules] = true
-				for _, FunctionName in ModuleFunctions do
-					local FoundFunctions = Module[FunctionName]
-
-					if not FoundFunctions then
-						continue
-					end
-
-					table.insert(RagdollHandlers[ClassName][SubCategory], {FoundFunctions, nil, {9e9, nil, Player, Player.Character}})
-				end
+			local IsAFunction = typeof(Module) == "function"
+			local IsNotATable = typeof(Module) ~= "table"
+				
+			if IsAFunction then
+				table.insert(RagdollHandlers[ClassName][SubCategory], {Index, nil, {9e9, nil, Player, Player.Character}})
+				RequiredModules[Index] = 1
 
 				continue
 			end
 
-			table.insert(RagdollHandlers[ClassName][SubCategory], {Index, Method, {nil, Player, Player.Character}})
-		end
+			if IsNotATable then
+				return
+			end
 
-		break
+			for _, FunctionName in ModuleFunctions do
+				local FoundFunctions = Module[FunctionName]
+
+				if not FoundFunctions then
+					continue
+				end
+
+				table.insert(RagdollHandlers[ClassName][SubCategory], {FoundFunctions, nil, {9e9, nil, Player, Player.Character}})
+				RequiredModules[Index] = 1
+			end
+
+			continue
+		end
+		local Method = IsRemoteFunction and "InvokeServer" or IsRemoteEvent and "FireServer"
+	
+		table.insert(RagdollHandlers[ClassName][SubCategory], {Index, Method, {nil, Player, Player.Character}})
+		RequiredModules[Index] = 1
 	end
 end
  
@@ -94,7 +96,7 @@ local function TriggerRagdoll(State: string | boolean)
 			local Index = Argument[1]
 			local Method = Argument[2]
 			local ListOfArguments = Argument[3]
-
+			print("called like idk", _)
 			for _, VArgument in ListOfArguments do
 				local Success, _ = Method and pcall(Index[Method], Index, VArgument) or pcall(Index, VArgument)
 
@@ -105,4 +107,5 @@ local function TriggerRagdoll(State: string | boolean)
 		end
 	end
 end
-return TriggerRagdoll
+
+getgenv().RagdollHandler = TriggerRagdoll
