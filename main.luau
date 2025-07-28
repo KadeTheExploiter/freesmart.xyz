@@ -80,7 +80,7 @@ local ExecutionCentre = Instance.new("ScreenGui"); do
 			Title.Name = "Title"
 			Title.Position = UDim2.new(0.037,0,0.05,0)
 			Title.Size = UDim2.new(0,200,0,26)
-			Title.Text = "freesmart.xyz, v1.2.0"
+			Title.Text = "freesmart.xyz, v1.2.1"
 			Title.TextColor3 = Color3.fromRGB(231,231,231)
 			Title.TextSize = 16
 			Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -151,7 +151,7 @@ local ExecutionCentre = Instance.new("ScreenGui"); do
 			Shadow.Position = UDim2.new(-0.18,0,-0.262,0)
 			Shadow.Size = UDim2.new(0,443,0,129)
 			Shadow.Visible = false
-			Shadow.ZIndex = -1
+			Shadowandex = -1
 			Shadow.Parent = Main
 		end
 
@@ -705,25 +705,6 @@ end
 
 -- Start
 
-local RagdollRemotes = {}
-local DeragdollRemotes = {}
-
-for _, Remote in game:GetDescendants() do 
-	if Remote:IsA("RemoteEvent") and string.match(string.lower(Remote.Name),"ragdoll") then
-		if not string.match(string.lower(Remote.Name), "un") then
-			RagdollRemotes[Remote] = {"FireServer", "Ball"}
-		else
-			DeragdollRemotes[Remote] = {"FireServer", "Ball"}
-		end
-	elseif Remote:IsA("RemoteFunction") and string.match(string.lower(Remote.Name),"ragdoll") then 
-		if not string.match(string.lower(Remote.Name), "un") then
-			RagdollRemotes[Remote] = {"InvokeServer", nil}
-		else
-			DeragdollRemotes[Remote] = {"InvokeServer", nil}
-		end
-	end
-end
-
 local Prefix = Enum.KeyCode.Semicolon
 local HoldingControl = nil
 local HoldingAlt = nil
@@ -775,7 +756,7 @@ end
 local Animations = {
     ['Freestylin'] = 4432024917,
     ['Floss'] = 4812941481,
-    ['Smooth Moves'] = 4900539662,
+    ['SmoothMoves'] = 4900539662,
     ['Aerostepping'] = 4776588732,
     ['ElectroSwing'] = 3485013176,
     ['MinecraftParrot'] = 4300228160,
@@ -791,7 +772,214 @@ local Animations = {
     ['TakeTheL'] = 4827299133,
     ['Laughing'] = 4846000379,
     ['Drip'] = 4959380041,
-    ['Pushups'] = 99504427539243
+    ['Pushups'] = 99504427539243,
+	["randomdance1"] = 131539514978219, 
+	["randomdance2"] = 8875904299, 
+	["Sitting"] = 4842017973, 
+	["BillyBounce"] = 6607119436, 
+	["ZeroTwo"] = 7867380116, 
+	["randomdance6"] = 16361564081, 
+	["randomdance7"] = 133424881252105, 
+	["randomdance8"] = 103315003879013, 
+	["randomdance9"] = 9158896160, 
+	["randomdance10"] = 97351316825183, 
+	["randomdance11"] = 108043820618942, 
+	["randomdance12"] = 13499921607, 
+	["randomdance13"] = 82852186670121, 
+	["randomdance14"] = 87138990788698, 
+	["randomdance15"] = 124210157097622, 
+	["randomdance16"] = 84420676303496, 
+	["randomdance17"] = 127993598199806, 
+	["randomdance18"] = 15093185505, 
+	["randomdance19"] = 126465263971242, 
+	["randomdance20"] = 14125486837, 
+	["randomdance21"] = 16143414597, 
+	["randomdance22"] = 94845993692069, 
+	["randomdance23"] = 8772535190, 
+	["randomdance24"] = 98543006822769, 
+	["randomdance25"] = 87342159331194, 
+	["randomdance26"] = 131658043622270, 
+	["randomdance27"] = 104525136565640, 
+	["randomdance28"] = 15039779727, 
+	["randomdance29"] = 81930504118048, 
+	["randomdance30"] = 110124478952785, 
+	["randomdance31"] = 8915458946, 
+	["randomdance32"] = 14125474952, 
+	["randomdance33"] = 9191168242, 
+	["randomdance34"] = 10687500605, 
+	["randomdance35"] = 18985649800, 
+	["randomdance36"] = 15115509387, 
+	["randomdance37"] = 12474374184, 
+	["randomdance38"] = 84447598378239, 
+	["randomdance39"] = 14321704772, 
+	["randomdance40"] = 117448332356578, 
+	["randomdance41"] = 108398552144945, 
+	["randomdance42"] = 18985726113, 
+	["randomdance43"] = 130485792890829, 
+	["randomdance44"] = 105422344378204, 
+	["randomdance45"] = 88802480011454, 
+	["randomdance46"] = 118257285014988, 
+	["randomdance47"] = 116375125220834, 
+	["randomdance48"] = 16362073134, 
+	["randomdance49"] = 137514700106313, 
+	["randomdance50"] = 18985529359, 
+	["randomdance51"] = 117913564677190, 
+	["randomdance52"] = 13542472660, 
+	["randomdance53"] = 13845017130, 
+	["randomdance54"] = 12852328987, 
+	["randomdance55"] = 135378496779908, 
+	["randomdance56"] = 10049457548, 
+	["randomdance57"] = 18985751348, 
+	["randomdance58"] = 18986687692, 
+	["randomdance59"] = 72763573055833, 
+	["randomdance60"] = 103736630097329, 
+	["randomdance61"] = 113378850180481, 
+	["randomdance62"] = 13579968035, 
+	["randomdance63"] = 117685575636093, 
+	["randomdance64"] = 117523961224024, 
+	["randomdance65"] = 12581348761, 
+	["randomdance66"] = 100191491062118, 
+	["SpookyDance"] = 15231364673, 
+	["randomdance68"] = 7828640127, 
+	["randomdance69"] = 97992194141034, 
+	["randomdance70"] = 137714761719347, 
+	["randomdance71"] = 14125434919, 
+	["randomdance72"] = 136475793242647, 
+	["randomdance73"] = 106836244406405, 
+	["randomdance74"] = 14630791982, 
+	["randomdance75"] = 90486645096597, 
+	["randomdance76"] = 119766959566102, 
+	["randomdance77"] = 95986910060034, 
+	["randomdance78"] = 7584192714, 
+	["randomdance79"] = 15200323140, 
+	["randomdance80"] = 81783637427821, 
+	["randomdance81"] = 92187683724153, 
+	["randomdance82"] = 13703701856, 
+	["randomdance83"] = 90127032448242, 
+	["randomdance84"] = 99826998720059, 
+	["randomdance85"] = 15509944325, 
+	["randomdance86"] = 104837571180061, 
+	["randomdance87"] = 8550316999, 
+	["randomdance88"] = 131559207454945, 
+	["randomdance89"] = 137721173051346, 
+	["randomdance90"] = 83266223088944, 
+	["randomdance91"] = 107274746267860, 
+	["randomdance92"] = 15039780593, 
+	["randomdance93"] = 70636200474507, 
+	["randomdance94"] = 135867676375598, 
+	["randomdance95"] = 133760897579422, 
+	["randomdance96"] = 13357063395, 
+	["randomdance97"] = 13447037105, 
+	["randomdance98"] = 132200906002694, 
+	["randomdance99"] = 18986591475, 
+	["randomdance100"] = 117514472098189, 
+	["randomdance101"] = 108623438531351, 
+	["randomdance102"] = 97173269581035, 
+	["randomdance103"] = 91260130273371, 
+	["randomdance104"] = 131562546189485, 
+	["randomdance105"] = 14536793751, 
+	["randomdance106"] = 96474371768104, 
+	["randomdance107"] = 103599268167271, 
+	["randomdance108"] = 136342468582970, 
+	["randomdance109"] = 138949323409799, 
+	["randomdance110"] = 13524047720, 
+	["randomdance111"] = 112386701635558, 
+	["randomdance112"] = 92293593057392, 
+	["randomdance113"] = 104680253809276, 
+	["randomdance114"] = 86319138773534, 
+	["randomdance115"] = 8755445499, 
+	["randomdance116"] = 84378678518832, 
+	["randomdance117"] = 129136529911079, 
+	["randomdance118"] = 106694699283623, 
+	["randomdance119"] = 12331326670, 
+	["randomdance120"] = 127134835827066, 
+	["randomdance121"] = 121535445943256, 
+	["randomdance122"] = 113243764075476, 
+	["randomdance123"] = 94565891001065, 
+	["randomdance124"] = 109272563401201, 
+	["randomdance125"] = 124324933161835, 
+	["randomdance126"] = 76540361217730, 
+	["randomdance127"] = 81542849315640, 
+	["randomdance128"] = 18986200915, 
+	["randomdance129"] = 139889845987864, 
+	["randomdance130"] = 116007172577928, 
+	["randomdance131"] = 135126535467732, 
+	["randomdance132"] = 117019555075601, 
+	["randomdance133"] = 76975616044095, 
+	["randomdance134"] = 107578737342278, 
+	["randomdance135"] = 14281766612, 
+	["StarPower"] = 107860942769438, 
+	["randomdance137"] = 108594846549173, 
+	["randomdance138"] = 139932788215900, 
+	["randomdance139"] = 77426216275542, 
+	["randomdance140"] = 86947150862846, 
+	["randomdance141"] = 16361576857, 
+	["randomdance142"] = 16729354942, 
+	["randomdance143"] = 135117654875702, 
+	["randomdance144"] = 124044710949643, 
+	["randomdance145"] = 89128798282561, 
+	["randomdance146"] = 8004387067, 
+	["randomdance147"] = 8328359953, 
+	["randomdance148"] = 92110306103230, 
+	["randomdance149"] = 131084375511969, 
+	["randomdance150"] = 12843537499, 
+	["randomdance151"] = 128389643372098, 
+	["randomdance152"] = 85680826440027, 
+	["randomdance153"] = 124646390933027, 
+	["randomdance154"] = 15049488553, 
+	["randomdance155"] = 72460213504303, 
+	["randomdance156"] = 14887006269, 
+	["randomdance157"] = 12698847826, 
+	["randomdance158"] = 14487794376, 
+	["randomdance159"] = 96406877786147, 
+	["randomdance160"] = 111366982175574, 
+	["randomdance161"] = 14037662848, 
+	["randomdance162"] = 84587788869282, 
+	["randomdance163"] = 117632426193831, 
+	["randomdance164"] = 93232228687989, 
+	["randomdance165"] = 134166870573340, 
+	["randomdance166"] = 109990576374190, 
+	["randomdance167"] = 75462948983147, 
+	["randomdance168"] = 114136127698808, 
+	["randomdance169"] = 101571523474068, 
+	["randomdance170"] = 11434028691, 
+	["randomdance171"] = 91347516355671, 
+	["randomdance172"] = 97072681531610, 
+	["ClubPenguin"] = 8772459775, 
+	["randomdance174"] = 125834337223799, 
+	["randomdance175"] = 13305408503, 
+	["randomdance176"] = 126880865139406, 
+	["randomdance177"] = 95530034966573, 
+	["randomdance178"] = 86485871533985, 
+	["randomdance179"] = 13894522815, 
+	["randomdance180"] = 101831164587635, 
+	["randomdance181"] = 13272181711, 
+	["randomdance182"] = 98916367562022, 
+	["randomdance183"] = 15605418190, 
+	["randomdance184"] = 137765549462705, 
+	["randomdance185"] = 102033341518359, 
+	["randomdance186"] = 130070981484912, 
+	["randomdance187"] = 10048786578, 
+	["randomdance188"] = 121698579993174, 
+	["randomdance189"] = 118766274919427, 
+	["randomdance190"] = 90421367029471, 
+	["randomdance191"] = 14721291184, 
+	["randomdance192"] = 85531796453437, 
+	["randomdance193"] = 18986357892, 
+	["randomdance194"] = 121267065315946, 
+	["randomdance195"] = 123141771338905, 
+	["randomdance196"] = 121255731270377, 
+	["randomdance197"] = 111038494387073, 
+	["randomdance198"] = 89892022491639, 
+	["randomdance199"] = 97699704852712, 
+	["randomdance200"] = 13843669201, 
+	["randomdance201"] = 111249002064299, 
+	["randomdance202"] = 70376423342136, 
+	["randomdance203"] = 74512050800520, 
+	["randomdance204"] = 92069955401837, 
+	["randomdance205"] = 129584064125006, 
+	["randomdance206"] = 13456829762, 
+	["randomdance207"] = 14684864488, 	
 }
 
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
@@ -822,7 +1010,11 @@ end)
 local function Reanimate()
 	-- Based off Kade's Myworld Testing Place Reanimate
 	-- Ragdoll Method by Hemi/Kaiya
-
+	if not RagdollHandler then
+		warn("Ragdoll Handler Not Found")
+		return
+	end
+	
 	local Events = {}
 	local Offsets = {}
 	local Joints = {}
@@ -877,25 +1069,10 @@ local function Reanimate()
 	local FakeRig = Players:CreateHumanoidModelFromDescription(Instance.new("HumanoidDescription"), Enum.HumanoidRigType.R6)
 	FakeRig.Name = "!!!!KadeRig"
 	FakeRig.Parent = Workspace
-	Workspace.CurrentCamera.CameraSubject = FakeRig
 
 	local FakeRigDescendants = GetDescendants(FakeRig)
 	local FakeHumanoid = FindFirstChildOfClass(FakeRig, "Humanoid")
 	local FakeRoot = FindFirstChild(FakeRig, "HumanoidRootPart")
-	local function ObtainMeshAndTextureOfAccessory(Accessory)
-		local Handle = FindFirstChild(Accessory, "Handle")
-		local IfMesh = FindFirstChildOfClass(Handle, "SpecialMesh")
-
-		if Handle:IsA("MeshPart") then
-			return {MeshId = Handle.MeshId, TextureId = Handle.TextureID}
-		elseif IfMesh then
-			return {MeshId = IfMesh.MeshId, TextureId = IfMesh.TextureId}
-		end
-	end
-
-	for Remote, Info in RagdollRemotes do
-		Remote[Info[1]](Remote, Info[2])
-	end
 
 	for _, FakePart in next, FakeRigDescendants do
 		if FakePart:IsA("BasePart") then
@@ -949,6 +1126,8 @@ local function Reanimate()
 		Offsets[Limb] = Input
 	end
 
+	RagdollHandler(true)
+
 	Events[1] = RunService.PreSimulation:Connect(function()
 		for RealPart, Info in next, Offsets do
 			local FakePart = Info[1]
@@ -958,6 +1137,7 @@ local function Reanimate()
 			RealPart.CanTouch = false
 			RealPart.Massless = true
 
+			FakePart.CanCollide = false
 			RealPart.AssemblyLinearVelocity = FakePart.AssemblyLinearVelocity
 			RealPart.AssemblyAngularVelocity = FakePart.AssemblyAngularVelocity
 		end
@@ -993,9 +1173,8 @@ local function Reanimate()
 
 		table.clear(FrameTimes)
 		table.clear(FrameData)
-
 	end
-
+	Workspace.CurrentCamera.CameraSubject = FakeRig
 	RespawnHandler = function()
 		StarterGui:SetCore("ResetButtonCallback", true)
 		for _, Signal in next, Events do
@@ -1011,9 +1190,7 @@ local function Reanimate()
 		AnimationPlayer = nil
 		RespawnHandler = nil
 
-		for Remote, Info in DeragdollRemotes do
-			Remote[Info[1]](Remote, Info[2])
-		end
+		RagdollHandler(false)
 
 		RootPart.Size = OriginalRootSize
 		if _Animate and _Animate.Parent then
@@ -1287,8 +1464,6 @@ Commands[{"clickgoto", "cgoto", "cg"}] = {
 		if Signals['ClickGoto'] then
 			Signals['ClickGoto']:Disconnect()
 			Signals['ClickGoto'] = nil
-			print("disconnected!")
-
 			return
 		end
 
@@ -1382,13 +1557,20 @@ Commands[{"playanim"}] = {
         local PlayID
         local SongName
 
-        for Name, AnimationID in Animations do
-            if AnimationID == tonumber(Input) then
-                SongName = Name
-                PlayID = AnimationID
-                break
-            end
-        end
+		local ToNumber = string.match(Input, "%d+")
+
+		if ToNumber then
+			PlayID = ToNumber
+		else
+			for Name, AnimationID in Animations do
+				if AnimationID == tonumber(Input) then
+					SongName = Name
+					print(Name)
+					PlayID = AnimationID
+					break
+				end
+			end
+		end
 
         if not PlayID then
             for Name, AnimationID in Animations do
@@ -1403,7 +1585,9 @@ Commands[{"playanim"}] = {
         if PlayID and AnimationPlayer then
             AnimationPlayer.Start(PlayID)
             if getcustomasset then
-				local Suc, _ = pcall(getcustomasset, "freesmart.xyz/Animations/" .. SongName .. ".mp3")
+				local epsteinlist = listfiles and listfiles("freesmart.xyz/Animations/") or nil
+				
+				local Suc, _ = pcall(getcustomasset, SongName and ("freesmart.xyz/Animations/" .. SongName .. ".mp3") or epsteinlist and epsteinlist[math.random(1, #epsteinlist)])
 				if Suc then
 					Music.SoundId = _
 				end
@@ -1640,6 +1824,11 @@ Commands[{"claimpart", "findpart", "scanpart", "sp"}] = {
 			end
 		end
 
+		if not CurrentPart then
+			warn(`[freesmart.xyz] failed to locate an unanchored part with collisions, sorry :-(`)
+			return
+		end
+
 		if BruteForce and Root and CurrentPart then
 			local PrimaryPos = Root.CFrame
 			Root.CFrame = CurrentPart.CFrame * CFrame.new(10, 10, math.random(-10, 10))
@@ -1654,11 +1843,6 @@ Commands[{"claimpart", "findpart", "scanpart", "sp"}] = {
 			Root.CFrame = PrimaryPos
 			Root.Anchored = true
 			Root.Anchored = false
-		end
-
-		if not CurrentPart then
-			warn(`[freesmart.xyz] failed to locate an unanchored part with collisions, sorry :-(`)
-			return
 		end
 
 		ClaimPart = CurrentPart
@@ -1741,12 +1925,8 @@ Commands[{"claimfling", "cpfling"}] = {
 	end
 }
 
--- Heartbeat loop for claimpart
-
-local _Signal; _Signal = RunService.PostSimulation:Connect(function()
+Signals[#Signals+1] = RunService.PostSimulation:Connect(function()
 	if not ExecutionCentre or ExecutionCentre.Parent == nil then
-		_Signal:Disconnect()
-
 		for Index, Signal in Signals do
 			Signal:Disconnect()
 			Signals[Index] = nil
