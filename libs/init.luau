@@ -710,6 +710,7 @@ local HoldingControl = nil
 local HoldingAlt = nil
 local AnimationPlayer = nil
 local RespawnHandler = nil
+local BreakOnSuccess = nil
 
 local KeyAliasMap = {
 	["-"] = Enum.KeyCode.Minus,
@@ -1007,7 +1008,11 @@ UserInputService.InputEnded:Connect(function(input, gameProcessedEvent)
 	end
 end)
 
-local function Reanimate()
+local IsPerma = false
+
+local function Reanimate(Noclip)
+	local Noclip = not Noclip
+	print(Noclip)
 	-- Based off Kade's Myworld Testing Place Reanimate
 	-- Ragdoll Method by Hemi/Kaiya
 	if not RagdollHandler then
@@ -1126,7 +1131,7 @@ local function Reanimate()
 		Offsets[Limb] = Input
 	end
 
-	RagdollHandler(true)
+	task.spawn(RagdollHandler, true, BreakOnSuccess)
 
 	Events[1] = RunService.PreSimulation:Connect(function()
 		for RealPart, Info in next, Offsets do
@@ -1137,7 +1142,9 @@ local function Reanimate()
 			RealPart.CanTouch = false
 			RealPart.Massless = true
 
-			FakePart.CanCollide = false
+			FakePart.CanCollide = Noclip
+			FakePart.CanTouch = Noclip
+			FakePart.CanQuery = Noclip
 			RealPart.AssemblyLinearVelocity = FakePart.AssemblyLinearVelocity
 			RealPart.AssemblyAngularVelocity = FakePart.AssemblyAngularVelocity
 		end
@@ -1189,8 +1196,11 @@ local function Reanimate()
 		FakeRig:Destroy()
 		AnimationPlayer = nil
 		RespawnHandler = nil
-
-		RagdollHandler(false)
+	
+		if IsPerma then
+			replicatesignal(LocalPlayer.ConnectDiedSignalBackend)
+		end
+		task.spawn(RagdollHandler, false, BreakOnSuccess)
 
 		RootPart.Size = OriginalRootSize
 		if _Animate and _Animate.Parent then
@@ -1281,6 +1291,57 @@ local function Reanimate()
 
 	warn(`[freesmart.xyz] Animation Handler Embedded.`)
 end
+
+Commands[{"permadeath", "pdeath"}] = {
+	Arguments = {},
+	Description = "makes you dead, supports reanim (*replicatesignal)",
+	Function = function()
+		if not replicatesignal then
+			return
+		end
+		IsPerma = true
+		
+		replicatesignal(LocalPlayer.ConnectDiedSignalBackend)
+
+		task.wait(Players.RespawnTime + 0.25)
+		
+		replicatesignal(LocalPlayer.Kill)
+	end
+}
+Commands[{"respawn", "prespawn"}] = {
+	Arguments = {},
+	Description = "respawns you with replicatesignal",
+	Function = function()
+		if not replicatesignal then
+			return
+		end
+		
+		replicatesignal(LocalPlayer.ConnectDiedSignalBackend)
+		
+		task.wait(Players.RespawnTime + 0.25)
+		
+		IsPerma = false
+	end
+}
+
+Commands[{"load", "loadstrings"}] = {
+	Arguments = {"code"},
+	Description = "executes code, simple",
+	Function = function(Args)
+		local Merge = table.concat(Args or {}, " ")
+		if Merge then
+			return loadstring(Merge)()
+		end
+	end
+}
+
+Commands[{"rspy", "remotespy"}] = {
+	Arguments = {},
+	Description = "runs simplespy by 78n",
+	Function = function()
+		loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpyBeta.lua"))()
+	end
+}
 
 Commands[{"dex", "explorer"}] = {
 	Arguments = {},
@@ -1524,9 +1585,40 @@ Commands[{"goto", "tp"}] = {
 }
 
 Commands[{"r6", "reanim"}] = {
-	Arguments = {},
+	Arguments = {"noclip"},
 	Description = "loads r6 reanimate, requires ragdoll",
-	Function = Reanimate
+	Function = function(Args)
+		local Noclip = (Args[1] == "true" or Args[1] == "yes" or Args[1] == "y") and true or false
+		
+		Reanimate(Noclip)
+	end
+}
+
+Commands[{"ragbreakloop", "ragfix"}] = {
+	Arguments = {},
+	Description = "turns ON breaking the ragdollhandler loop, might break sometimes",
+	Function = function(Args)
+		BreakOnSuccess = true
+	end
+}
+
+Commands[{"noragbreakloop", "ragfixoff"}] = {
+	Arguments = {},
+	Description = "turns OFF breaking the ragdollhandler loop, might break sometimes",
+	Function = function(Args)
+		BreakOnSuccess = false
+	end
+}
+
+Commands[{"delrig", "delreanim"}] = {
+	Arguments = {""},
+	Description = "forcefully removes the reanimate rig",
+	Function = function()
+		local Target = workspace:FindFirstChild("!!!!KadeRig")
+		if Target then
+			Target:Destroy()
+		end
+	end
 }
 
 Commands[{"unr6", "dereanim"}] = {
