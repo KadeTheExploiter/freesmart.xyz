@@ -1545,17 +1545,17 @@ for key in Animations do
 end
 
 Commands[{"playanim"}] = {
-    Arguments = {"animation_id_or_name"},
+    Arguments = {"animation_id_or_name", "song_path?"},
     Description = "Loads an R6 animation by ID or name. (!!! reanimate first)",
     Function = function(Args)
         local Input = Args[1]
-
+		local CustomSongName = Args[2]
+		
         if not Input then 
             Input = Animations[AnimationKeys[math.random(1, #AnimationKeys)]]
         end
 
         local PlayID
-        local SongName
 
 		local ToNumber = string.match(Input, "%d+")
 
@@ -1565,29 +1565,29 @@ Commands[{"playanim"}] = {
 			for Name, AnimationID in Animations do
 				if AnimationID == tonumber(Input) then
 					SongName = Name
-					print(Name)
 					PlayID = AnimationID
 					break
 				end
 			end
 		end
 
-        if not PlayID then
-            for Name, AnimationID in Animations do
-                if string.match(Name:lower(), Input:lower()) then
-                    PlayID = AnimationID
-                    SongName = Name
-                    break
-                end
-            end
-        end
-
         if PlayID and AnimationPlayer then
             AnimationPlayer.Start(PlayID)
             if getcustomasset then
-				local epsteinlist = listfiles and listfiles("freesmart.xyz/Animations/") or nil
+				local EpsteinList = listfiles and listfiles("freesmart.xyz/Animations/") or nil
+				local SongPath
 				
-				local Suc, _ = pcall(getcustomasset, SongName and ("freesmart.xyz/Animations/" .. SongName .. ".mp3") or epsteinlist and epsteinlist[math.random(1, #epsteinlist)])
+				if CustomSongName then
+					for _, Song in EpsteinList do
+						if string.match(Song, CustomSongName) then
+							SongPath = Song
+						end
+					end
+				else
+					SongPath = SongName and ("freesmart.xyz/Animations/" .. SongName .. ".mp3") or EpsteinList and EpsteinList[math.random(1, #EpsteinList)]
+				end
+				
+				local Suc, _ = pcall(getcustomasset, SongPath)
 				if Suc then
 					Music.SoundId = _
 				end
@@ -1613,9 +1613,10 @@ Commands[{"printanims"}] = {
 	Arguments = {},
 	Description = "(!!! reanim first) prints all the preset anims in console",
 	Function = function()
-		table.foreach(Animations, print)
+		table.foreach(AnimationKeys, print)
 	end
 }
+
 
 Commands[{"mute", "muteanimsongs"}] = {
 	Arguments = {},
