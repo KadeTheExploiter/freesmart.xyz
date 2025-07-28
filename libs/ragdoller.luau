@@ -43,7 +43,7 @@ for _, Index in Instances do
 
 			if IsModule then
 				local Success, Module = pcall(require, Index)
-                if not Success then
+				if not Success then
 					continue
 				end
 
@@ -96,8 +96,6 @@ local function TriggerRagdoll(State: string | boolean)
 				local Success, _ = Method and pcall(Index[Method], Index, VArgument) or pcall(Index, VArgument)
 
 				if Success then
-					warn(`success {VArgument} `)
-
 					break
 				end
 			end
