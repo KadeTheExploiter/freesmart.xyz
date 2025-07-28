@@ -37,12 +37,9 @@ for _, Index in Instances do
 	end
 
 	local LowercaseName = _stringlower(Index.Name)
-	print(LowercaseName)
 	if _stringmatch(LowercaseName, "ragdoll") or _stringmatch(LowercaseName, "falling") then
 		local IsDeragdolling = _stringmatch(LowercaseName, "un")
 		local SubCategory = IsDeragdolling and "End" or "Start"
-		print('sir are you stupid')
-
 
 		if IsModuleScript then
 			local Success, Module = pcall(require, Index)
