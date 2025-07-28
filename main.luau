@@ -21,7 +21,7 @@ local function ChangeProgress(Size, Text)
 end
 
 ChangeProgress(0.25, "Loading Main UI")
-	Loader = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/main.luau"))()
+	Loader = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/libs/init.luau"))()
 if not RagdollHandler then
 	ChangeProgress(0.75, "Loading RagdollHandler (was nil)")	
 	RagdollHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/libs/ragdoller.luau"))()
