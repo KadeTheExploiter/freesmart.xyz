@@ -17,13 +17,9 @@ for _, Index in Instances do
 		continue
 	end
 
-	local IsModule = Index:IsA("ModuleScript")
-	local IsRemoteFunction = Index:IsA("RemoteFunction")
-	local IsRemoteEvent = Index:IsA("RemoteEvent")
-
-	if not (IsModule or IsRemoteEvent or IsRemoteFunction) then
-		continue
-	end
+	local IsModule = Index:IsA("ModuleScript") if not IsModule then return end
+	local IsRemoteFunction = Index:IsA("RemoteFunction") if not IsRemoteFunction then return end
+	local IsRemoteEvent = Index:IsA("RemoteEvent") if not IsRemoteEvent then return end
 
 	if IsRemoteEvent and Index.Name == "variableserver" then
 		table.insert(RagdollHandlers['RemoteEvent']["Start"], {Index, "FireServer", {"ragdoll", true}})
@@ -43,7 +39,7 @@ for _, Index in Instances do
 
 			if IsModule then
 				local Success, Module = pcall(require, Index)
-		        	if not Success then
+				if not Success then
 					continue
 				end
 
@@ -79,7 +75,7 @@ for _, Index in Instances do
 		break
 	end
 end
- 
+
 table.clear(RequiredModules);
 
 local function TriggerRagdoll(State: string | boolean)
@@ -97,8 +93,6 @@ local function TriggerRagdoll(State: string | boolean)
 				local Success, _ = Method and pcall(Index[Method], Index, VArgument) or pcall(Index, VArgument)
 
 				if Success then
-					warn(`success {VArgument} `)
-
 					break
 				end
 			end
