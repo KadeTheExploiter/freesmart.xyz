@@ -23,6 +23,6 @@ end
 ChangeProgress(0.25, "Loading Ragdoller, can take 20s.")
 RagdollHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/libs/ragdoller.luau"))()
 ChangeProgress(0.75, "Loading Main UI")
-Loader = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/main.luau"))()
+Loader = loadstring(game:HttpGet("https://raw.githubusercontent.com/KadeTheExploiter/freesmart.xyz/refs/heads/main/libs/init.luau"))()
 ChangeProgress(1, "Loaded!")
 ScreenGui:Destroy()
