@@ -1,7 +1,11 @@
 -- Ragdoll Bruteforce, credit Gelatek when used
 
+local _stringlower = string.lower
+local _stringmatch = string.match
+
 local Player = game:GetService("Players").LocalPlayer
-local Instances =  game:GetDescendants()
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Instances = ReplicatedStorage:GetDescendants()
 
 local IndexNames = {"ragdoll", "falling"}
 local ModuleFunctions = {"Ragdoll", "ServerRagdoll", "StartRagdolling"}
@@ -13,13 +17,15 @@ local RagdollHandlers = {
 
 local RequiredModules = {}
 for _, Index in Instances do
-	if RequiredModules[Index] then
+	local ClassName = Index.ClassName
+
+	local IsModuleScript = ClassName == "ModuleScript"
+	local IsRemoteFunction = ClassName == "RemoteFunction"
+	local IsRemoteEvent = ClassName == "ModuleScript"
+
+	if not (IsModuleScript or IsRemoteEvent or IsRemoteFunction) then
 		continue
 	end
-
-	local IsModule = Index:IsA("ModuleScript") if not IsModule then return end
-	local IsRemoteFunction = Index:IsA("RemoteFunction") if not IsRemoteFunction then return end
-	local IsRemoteEvent = Index:IsA("RemoteEvent") if not IsRemoteEvent then return end
 
 	if IsRemoteEvent and Index.Name == "variableserver" then
 		table.insert(RagdollHandlers['RemoteEvent']["Start"], {Index, "FireServer", {"ragdoll", true}})
@@ -28,18 +34,17 @@ for _, Index in Instances do
 		continue
 	end
 
-	local LowercaseName = string.lower(Index.Name)
+	local LowercaseName = _stringlower(Index.Name)
 	for _, StartName in IndexNames do
-		if string.match(LowercaseName, StartName) then
-			local Category = Index.ClassName
+		if _stringmatch(LowercaseName, StartName) then
 			local Method = IsRemoteFunction and "InvokeServer" or IsRemoteEvent and "FireServer"
 		
-			local IsDeragdolling = string.match(LowercaseName, "un")
+			local IsDeragdolling = _stringmatch(LowercaseName, "un")
 			local SubCategory = IsDeragdolling and "End" or "Start"
 
-			if IsModule then
+			if IsModuleScript then
 				local Success, Module = pcall(require, Index)
-				if not Success then
+                if not Success then
 					continue
 				end
 
@@ -47,7 +52,7 @@ for _, Index in Instances do
 				local IsNotATable = typeof(Module) ~= "table"
 					
 				if IsAFunction then
-					table.insert(RagdollHandlers[Category][SubCategory], {Index, nil, {9e9, nil, Player, Player.Character}})
+					table.insert(RagdollHandlers[ClassName][SubCategory], {Index, nil, {9e9, nil, Player, Player.Character}})
 
 					continue
 				end
@@ -55,6 +60,7 @@ for _, Index in Instances do
 				if IsNotATable then
 					return
 				end
+
 				RequiredModules[RequiredModules] = true
 				for _, FunctionName in ModuleFunctions do
 					local FoundFunctions = Module[FunctionName]
@@ -63,19 +69,19 @@ for _, Index in Instances do
 						continue
 					end
 
-					table.insert(RagdollHandlers[Category][SubCategory], {FoundFunctions, nil, {9e9, nil, Player, Player.Character}})
+					table.insert(RagdollHandlers[ClassName][SubCategory], {FoundFunctions, nil, {9e9, nil, Player, Player.Character}})
 				end
 
 				continue
 			end
 
-			table.insert(RagdollHandlers[Category][SubCategory], {Index, Method, {nil, Player, Player.Character}})
+			table.insert(RagdollHandlers[ClassName][SubCategory], {Index, Method, {nil, Player, Player.Character}})
 		end
 
 		break
 	end
 end
-
+ 
 table.clear(RequiredModules);
 
 local function TriggerRagdoll(State: string | boolean)
